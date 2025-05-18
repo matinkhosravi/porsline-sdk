@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg
+*.egg-info/
+dist/
+build/
+env/
+venv/
+.env
+
+# macOS
+.DS_Store
+
+# PyCharm
+.idea/
+
+# Logs
+*.log
+
+# Frontend Node
+node_modules/
+dist/
+*.lock
+
+# System
+*.swp
+*.bak
+*.tmp

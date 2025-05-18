@@ -1,0 +1,30 @@
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Node
+node_modules
+npm-debug.log
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+*.env
+env/
+venv/
+
+# Git
+.git
+.gitignore
+
+# IDE
+.idea
+.vscode
+
+# Build artifacts
+dist
+build
+*.egg-info
