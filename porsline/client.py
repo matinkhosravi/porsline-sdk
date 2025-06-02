@@ -1,35 +1,30 @@
 import requests
-import time
-from porsline.models import APIError
+from .form import Form
 
-class PorslineAPIException(Exception):
-    def __init__(self, status_code, message):
-        super().__init__(f"Porsline API Error {status_code}: {message}")
-        self.status_code = status_code
-        self.message = message
-
-class PorslineClient:
+class Porsline:
     BASE_URL = "https://survey.porsline.ir"
 
     def __init__(self, api_key: str):
         self.api_key = api_key
+        self.headers = {
+            "Authorization": f"API-Key {api_key}",
+            "Content-Type": "application/json"
+        }
 
-    def request(self, method: str, endpoint: str, **kwargs):
-        headers = kwargs.pop("headers", {})
-        headers["Authorization"] = f"API-Key {self.api_key}"
-        headers["Content-Type"] = "application/json"
+    def get_forms(self):
+        response = requests.get(f"{self.BASE_URL}/api/folders/", headers=self.headers)
+        response.raise_for_status()
+        forms = []
+        for folder in response.json():
+            folder_id = folder["id"]
+            form_list = requests.get(f"{self.BASE_URL}/api/folders/{folder_id}/", headers=self.headers)
+            if form_list.status_code == 200 and "surveys" in form_list.json():
+                for survey in form_list.json()["surveys"]:
+                    forms.append(Form(survey["id"], survey["name"], self.api_key))
+        return forms
 
-        for attempt in range(5):
-            response = requests.request(method, f"{self.BASE_URL}{endpoint}", headers=headers, **kwargs)
-            if response.status_code == 429:
-                retry_after = int(response.headers.get("Retry-After", "60"))
-                print(f"Rate limited. Retrying in {retry_after} seconds...")
-                time.sleep(retry_after)
-                continue
-            try:
-                response.raise_for_status()
-            except requests.HTTPError:
-                raise PorslineAPIException(response.status_code, response.text)
-            return response.json()
-
-        raise PorslineAPIException(429, "Too many retries due to rate limiting.")
+    def get_form(self, form_id):
+        response = requests.get(f"{self.BASE_URL}/api/v2/surveys/{form_id}/", headers=self.headers)
+        response.raise_for_status()
+        survey_data = response.json()
+        return Form(form_id, survey_data.get("name", "Unnamed Survey"), self.api_key)
