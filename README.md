@@ -1,19 +1,24 @@
 # Porsline SDK
-A lightweight Python SDK to interact with Porsline forms and convert Jalali dates to Gregorian.
 
-## Features
-Fetch and parse form data from Porsline
+A lightweight, Pythonic SDK for integrating with the [Porsline](https://www.porsline.ir) survey API.  
+Ideal for ETL pipelines, analytics, and survey automation.
 
-Convert Jalali dates to Gregorian
+## 📦 Features
 
-Designed for integration with surveys
+- Fetch survey columns and responses
+- Incremental sync via timestamp
+- SOLID-compliant structure for extensibility
 
-## Installation
+---
 
-`pip install porsline-sdk`
+## 🚀 Installation
 
-## Usage
-````python
+```bash
+pip install porsline-sdk
+``` 
+
+## 🔧 Usage
+```python
 from porsline import Porsline
 
 instance = Porsline(API_KEY)
@@ -24,4 +29,10 @@ print(form.cols)
 print(form.responses()) # To get all responses
 print(form.responses('2025-05-19T10:32:16')) # to get from one point
 
-````
+```
+
+## 📄 License
+This project is licensed under the MIT License.
+
+## ✨ Contributing
+Pull requests are welcome. For major changes, please open an issue first to discuss your proposal.
