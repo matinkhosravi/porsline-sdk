@@ -13,10 +13,15 @@ Designed for integration with surveys
 `pip install porsline-sdk`
 
 ## Usage
-````
-from porsline.client import PorslineClient
+````python
+from porsline import Porsline
 
-client = PorslineClient(api_key="your_api_key")
-form = client.get_form("form_id")
+instance = Porsline(API_KEY)
+
+all_forms = instance.get_forms()
+form = instance.get_form(all_forms[0].id)
 print(form.cols)
+print(form.responses()) # To get all responses
+print(form.responses('2025-05-19T10:32:16')) # to get from one point
+
 ````
