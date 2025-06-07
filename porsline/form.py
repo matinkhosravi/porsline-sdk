@@ -32,9 +32,9 @@ class Form:
         return self._cols
 
     def responses(self, timestamp: str = None):
-        url = f"{self.BASE_URL}/api/v2/surveys/{self.id}/responses/results-table/"
+        url = f"{self.BASE_URL}/api/v2/surveys/{self.id}/responses/results-table/?page_size=1000"
         if timestamp:
-            url += f"?since={timestamp}"
+            url += f"&since={timestamp}"
         response = requests.get(url, headers=self.headers)
         response.raise_for_status()
         return [{"response": item["data"][2:-2], "submitted_at": jconvert(item["data"][-1])} for item in response.json()["body"]]
