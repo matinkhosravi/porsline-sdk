@@ -60,7 +60,7 @@ class Form:
             for i, item in enumerate(header):
                 step = 1
                 if item["multiple"]:
-                    refined_body.append([bx.get("data")[body_i: body_i + len(item["choices"]) - 1] for bx in body])
+                    refined_body.append([bx.get("data")[body_i: body_i + len(item["choices"])] for bx in body])
                     step = len(item["choices"])
                 else:
                     refined_body.append([bx.get("data")[body_i] for bx in body])
