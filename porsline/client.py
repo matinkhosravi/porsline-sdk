@@ -20,6 +20,8 @@ class Porsline:
             form_list = requests.get(f"{self.BASE_URL}/api/folders/{folder_id}/", headers=self.headers)
             if form_list.status_code == 200 and "surveys" in form_list.json():
                 for survey in form_list.json()["surveys"]:
+                    if not survey["active"]:
+                        continue
                     forms.append(Form(survey["id"], survey["name"], self.api_key))
         return forms
 
