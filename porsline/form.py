@@ -1,5 +1,9 @@
+from datetime import datetime
+from typing import Any
+
 import requests
 from .jalali_to_gregorian import jconvert
+
 
 class Form:
     BASE_URL = "https://survey.porsline.ir"
@@ -31,10 +35,45 @@ class Form:
             self._cols = questions
         return self._cols
 
-    def responses(self, timestamp: str = None):
+    def responses(self, since: str = None, header: bool = False) -> list[dict] | list[list]:
         url = f"{self.BASE_URL}/api/v2/surveys/{self.id}/responses/results-table/?page_size=1000"
-        if timestamp:
-            url += f"&since={timestamp}"
+        if since:
+            url += f"&since={since}"
         response = requests.get(url, headers=self.headers)
         response.raise_for_status()
-        return [{"response": item["data"][2:-2], "submitted_at": jconvert(item["data"][-1])} for item in response.json()["body"]]
+
+        if header:
+            response = response.json()
+            body = response["body"]
+            header = [
+                {
+                    "id": item.get("id"),
+                    "title": item.get("title"),
+                    "choices": item.get("choices") or None,
+                    "multiple": item.get("allow_multiple_select") or False
+                }
+                for item in response["header"]
+            ]
+            # return body
+            refined_body = []
+            body_i = 0
+            for i, item in enumerate(header):
+                step = 1
+                if item["multiple"]:
+                    refined_body.append([bx.get("data")[body_i: body_i + len(item["choices"]) - 1] for bx in body])
+                    step = len(item["choices"])
+                else:
+                    refined_body.append([bx.get("data")[body_i] for bx in body])
+
+                body_i += step
+
+            return [
+                [{"head": header[i], "val": refined_body[i][j]} for i in range(len(header))]
+                for j in range(len(refined_body[0]))
+            ]
+
+        else:
+            return [{
+                "response": item["data"][2:-2],
+                "submitted_at": jconvert(item["data"][-1])}
+                for item in response.json()["body"]]
